@@ -10,6 +10,16 @@ public class Contacts {
 	String telephone;
 	String email;
 	LocalDateTime created;
+	
+	public Contacts() {
+		
+	}
+	
+	public Contacts(String firstName, String lastName) {
+		this.firstname=firstName;
+		this.lastname=lastName;
+	}
+	
 	public int getId() {
 		return id;
 	}
