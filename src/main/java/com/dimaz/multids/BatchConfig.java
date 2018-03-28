@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @EnableBatchProcessing
-public class BatchConfig {
+public class BatchConfig  {
 
 	@Autowired
 	@Qualifier("jdbcMySqlTemplate")
@@ -28,19 +28,36 @@ public class BatchConfig {
 	@Autowired
 	@Qualifier("jdbcPostgreSqlTemplate")
 	JdbcTemplate postGreSQLJdbcTemp;
-	
+
 	@Autowired
 	JobBuilderFactory jobBuilderFactory;
 	
 	@Autowired
 	StepBuilderFactory stepBuilderFactory;
 	
+/*	@Override
+	@Autowired
+	public void setDataSource(@Qualifier("mySQLDataSource")DataSource batchDataSource) {
+		super.setDataSource(batchDataSource);
+	}*/
+	
+	/*@Bean
+	BatchConfigurer mySqlConfigurer(@Qualifier("mySQLDataSource") DataSource mySqlDS) {
+		return new DefaultBatchConfigurer(mySqlDS);
+	}
+	
+	@Bean
+	BatchConfigurer postGreConfigurer(@Qualifier("postgreSQLDataSource") DataSource postGreDS) {
+		return new DefaultBatchConfigurer(postGreDS);
+	}*/
+	
 	@Bean
 	public ItemReader<Contacts> readContacts() {
 		JdbcCursorItemReader<Contacts> readContactsTbl = new JdbcCursorItemReader<>();
 		
 		readContactsTbl.setDataSource(mySQLJdbcTemp.getDataSource());
-		readContactsTbl.setSql("");
+		
+		readContactsTbl.setSql("select * from contacts");
 		readContactsTbl.setRowMapper(new BeanPropertyRowMapper<>(Contacts.class));
 		
 		return readContactsTbl;
@@ -50,8 +67,13 @@ public class BatchConfig {
 	public JdbcBatchItemWriter<Contacts> writeContacts() {
 		JdbcBatchItemWriter<Contacts> writeContactsTbl = new JdbcBatchItemWriter<Contacts>();
 		
+		StringBuffer insertSql = new StringBuffer();
+		
+		insertSql.append("INSERT INTO ACCOUNTS (firstname,lastname,telephone, email,created)");
+		insertSql.append(" VALUES (:firstname, :lastname, :telephone, :email, :created) ");
 		writeContactsTbl.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<Contacts>());
-		writeContactsTbl.setSql("");
+		writeContactsTbl.setSql(insertSql.toString());
+		
 		writeContactsTbl.setDataSource(postGreSQLJdbcTemp.getDataSource());
 		return writeContactsTbl;
 	}

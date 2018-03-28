@@ -19,11 +19,12 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 	private static final Logger logger = Logger.getLogger(JobCompletionNotificationListener.class);
 	
+	@Autowired
 	@Qualifier("jdbcPostgreSqlTemplate")
 	private JdbcTemplate jdbcPostGre;
 	
 	@Autowired
-	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
+	public JobCompletionNotificationListener(@Qualifier("jdbcPostgreSqlTemplate")JdbcTemplate jdbcTemplate) {
 		this.jdbcPostGre = jdbcTemplate;
 	}
 	
